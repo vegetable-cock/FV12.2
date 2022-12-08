@@ -3,7 +3,8 @@
 # November 1 2022
 
 # to run: python fuzzy_vault.py (writes to vault file vault.py)
-
+# Q1：指纹生成。应当有一个模拟PUF的部分
+# Q2：身份认证————密钥保护。现在保护的文本实际上是人名，后续用来和人名库进行比对
 
 from random import (uniform, shuffle)
 import matplotlib.pyplot as plt
@@ -41,7 +42,7 @@ r = 40  # 杂凑点数量
 
 
 def get_coefficients(word):
-    word = word.upper()  # 把字符串word中的小写字符转换成大写
+    word = word.upper()  # 转换成大写。为啥要这么操作？
     n = len(word) // degree  # n为系数的长度
     if n < 1: n = 1  # 如果n<1就拉到1
     substrings = [word[i:i + n] for i in list(range(0, len(word), n))]
@@ -275,7 +276,7 @@ def main():
     painting(tempx, tempy)
 
 
-if __name__ == '__main__':  # python的初始化？
+if __name__ == '__main__':
     main()
 '''
 作用：python文件有两种执行方式：1.作为脚本直接执行；2.import到其他的python脚本中被调用执行。
