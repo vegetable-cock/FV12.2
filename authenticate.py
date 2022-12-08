@@ -10,8 +10,7 @@ known = ['jayme woogerd', 'norman ramsey', 'ming chow', 'Li Shiyang', 'LI SHIYAN
 warnings.filterwarnings("ignore")
 
 
-# 老子跑通了！！！！ 现在的问题是为啥用真实用户的信息还是得到unknown user？
-# 问题可能出在Q那个位置，把那块抠一下
+
 # 那里的*到底代表引入多个参数还是解压？zip(*zip(a,b))=a,b  有这样一种用法
 def main():
     #with open("fingerprints\jayme", 'r') as template:  # jayme这个文件应该就是用户用来验证的指纹
