@@ -5,6 +5,8 @@
 # to run: python fuzzy_vault.py (writes to vault file vault.py)
 # Q1：指纹生成。应当有一个模拟PUF的部分
 # Q2：身份认证————密钥保护。现在保护的文本实际上是人名，后续用来和人名库进行比对
+# Q3：编码。
+# 拉格朗日插值法拟合多项式
 
 from random import (uniform, shuffle)
 import matplotlib.pyplot as plt
@@ -12,6 +14,7 @@ import numpy as np
 from numpy import polyfit
 # import real
 import test_real  # 暂时用我自己编的数
+import 拉格朗日插值法函数
 
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
@@ -101,9 +104,6 @@ def lock(secret, template):
     for point in template:
         vault.append([point, p_x(point, coeffs)])
         # print(vault)
-        # [[0.45, 74.26687250784877], [1.11, 478.9186058535482], [2.321, 4558.217209689147], [0.12, 16.54296268593907],
-        # [1.11, 478.9186058535482], [0.22, 29.396630032510117], [2.91, 10007.541034644233], [3.554, 20543.38893699642],
-        # [1.33, 787.3276543225517], [0.01, 5.360754398373315]]
 
         # point_x.append(point)
         # point_y.append(p_x(point, coeffs))
@@ -158,7 +158,11 @@ def approx_equal(a, b, epsilon):
 输入：参数vault：设备存储的vault
 template
 返回：多项式系数列表
-
+问题：1.polyfit是numpy中的拟合多项式函数，应被替换为拉格朗日拟合
+2.zip函数：将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的对象
+3.try——except是一个异常捕捉语句。首先执行try子句，如果出现异常且和except的条件相同，执行except子句
+  通常一个try会带有多个不同类型的except，用来反映不同类型的错误
+  但这里为什么要搞一个我还没看明白，IndexError之后返回None吗？那不是白检测了。
 ****************************************************************************'''
 
 
@@ -183,24 +187,19 @@ def unlock(template, vault):
     # 则Q应该是备选点集打包成的元组
     # template应该是用来验证的生物特征模板（比如fingerprints\jayme2)
     Q = list(zip(*[project(point) for point in template if project(point) is not None]))
-    # Q = list(zip([project(point) for point in template if project(point) is not None]))
-    print("Q=", Q)
-    print("Q[0]=", list(Q[0]))
-    print("Q[1]=", Q[1])  # 为啥返回的东西是一个元组？？
-    # zip函数：将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的对象
-    # python中zip返回的是一个列表
-    print("多项式系数列表为", polyfit(Q[0], Q[1], deg=degree))  # 测试用
+
+    #print("polyfit多项式系数列表为", polyfit(Q[0], Q[1], deg=degree))  # 测试用
+    print("lagrange多项式系数列表为", 拉格朗日插值法函数.langr(list(Q[0]), list(Q[1]), degree + 1))  # 测试用
     try:
-        return polyfit(list(Q[0]), list(Q[1]), deg=degree)
-    # polyfit是numpy中的拟合多项式函数，（x,y,阶数）,xy应该是列表
-    # 返回一个列表，表中为拟合出的多项式系数，从高阶到低阶
+        #return polyfit(list(Q[0]), list(Q[1]), deg=degree)
+        return 拉格朗日插值法函数.langr(list(Q[0]), list(Q[1]), degree + 1)
+    # 理论上没有问题，应该和输出了两次有关。
+
     except IndexError:
         return None
-    # try——except是一个异常捕捉语句。首先执行try子句，如果出现异常且和except的条件相同，执行except子句
-    # 通常一个try会带有多个不同类型的except，用来反映不同类型的错误
-    # 但这里为什么要搞一个我还没看明白，IndexError之后返回None吗？那不是白检测了。
 
     # *到底代表引入多个参数还是解压？zip(*zip(a,b))=a,b  有这样一种用法
+
 
 '''****************************************************************************
 函数decode：解码
@@ -220,26 +219,21 @@ def decode(coeffs):
     # 如果用户解出来的coeffs是合法的，那么经过decode以后就会得到对应的word（人名）
     s = ""
     for c in coeffs:
-        print("c=", c)
         num = int(round(c ** 3))  # num是系数某一位的三次方取整，对于c=19.46,num=7376
-        print("num1", num)
         # int:将一个字符串或数字化成整形，向0取整
         if num == 0:
             continue  # num=0则跳出本次循环，开始读取下一阶系数
         while num > 0:
-            print("num=", num)
-            print("num%100=", num % 100)
-            print("chr(num%100)=", chr(num % 100))
-            print("str(chr(num%100))=", str(chr(num % 100)))
             # s += str(chr(num % 100)).lower() # 原代码，解不出name来,而且为什么变成lower了啊，明明真实姓名是有大写的
             # print("s=", s)
             # s += str(chr(int(num % 100))).lower()  # 测试用，能解出来乱码，其中包含真实姓名
-            s += str(chr(int(num % 100)))# 测试用，不强制转为小写
+            s += str(chr(int(num % 100)))  # 测试用，不强制转为小写
             print("s=", s)
             # num /= 100 # 原代码
-            #num = round(num/100) # 测试用
-            num = num // 100 #测试用2
+            # num = round(num/100) # 测试用
+            num = num // 100  # 测试用2
     return s  # 为什么读取一个字母就跳出循环了？
+
 
 # 现在只能全小写或者全大写，之后再改
 
