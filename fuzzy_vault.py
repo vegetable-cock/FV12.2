@@ -12,9 +12,9 @@ from random import (uniform, shuffle)
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import polyfit
-# import real
-import test_real  # 暂时用我自己编的数
-import 拉格朗日插值法函数
+
+import Lagrange as lg
+import real
 
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
@@ -189,11 +189,11 @@ def unlock(template, vault):
     Q = list(zip(*[project(point) for point in template if project(point) is not None]))
 
     #print("polyfit多项式系数列表为", polyfit(Q[0], Q[1], deg=degree))  # 测试用
-    print("lagrange多项式系数列表为", 拉格朗日插值法函数.langr(list(Q[0]), list(Q[1]), degree + 1))  # 测试用
+    #print("lagrange多项式系数列表为", lg.langr(list(Q[0]), list(Q[1]), degree + 1))  # 测试用
+    # 原来问题出在这。在try-except外调用拟合函数时，会出现list index out of range错误。
     try:
         #return polyfit(list(Q[0]), list(Q[1]), deg=degree)
-        return 拉格朗日插值法函数.langr(list(Q[0]), list(Q[1]), degree + 1)
-    # 理论上没有问题，应该和输出了两次有关。
+        return lg.langr(list(Q[0]), list(Q[1]), degree + 1)
 
     except IndexError:
         return None
@@ -255,16 +255,16 @@ def main():
 
     with open('vaults.py', 'w+') as f:
         f.write('vaults = [')
-        for p in test_real.people:
+        for p in real.people:
             # p应该是人名。
-            f.write(str(lock(p, test_real.people[p])))
+            f.write(str(lock(p, real.people[p])))
             f.write(',')
         f.write(']')
 
     # 画图：最后存的模糊保险箱的图
     tempx = []
     tempy = []
-    for a in lock(p, test_real.people[p]):
+    for a in lock(p, real.people[p]):
         tempx.append(a[0])
         tempy.append(a[1])
     painting(tempx, tempy)
