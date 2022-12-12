@@ -14,10 +14,7 @@ e.g. `ming` and run:
 
     python authenticate.py fingerprints/ming
 
-This program imports a list of vaults, which were created using "fingerprints"
-(biometric templates). Each vault stores encrypted fingerprint data bound with a 
-secret key (i.e. the name of the person). Thus, when `authenticate.py` is 
-invoked with the supplied template, we try to unlock each vault to get the 
-name encrypted in it. If the template is a close enough match to the original 
-template used to create the vault and the name returned is on a list of known 
-users, we get a match and the user is accepted.
+#### 12.12更新：
+1. 基于sympy包编写函数实现了拉格朗日插值法对多项式进行重构，不再使用numpy中的最小二次拟合polyfit
+2. 解决了使用其他指纹进行解锁时的list Index out of range报错
+3. 下一步关注多项式的选择、有限域以及画图问题。
