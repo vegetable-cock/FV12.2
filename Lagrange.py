@@ -36,7 +36,6 @@ def langr(a, b, degree):
             l[i] = l[i] / x
         l[i] = l[i] / den[i]
 
-    # Calculo de PL
     for i in range(0, degree):
         if i == 0:
             pl = b[0] * l[0]

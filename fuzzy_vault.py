@@ -2,11 +2,9 @@
 # NUDT UniNAV
 # November 1 2022
 
-# to run: python fuzzy_vault.py (writes to vault file vault.py)
 # Q1：指纹生成。应当有一个模拟PUF的部分
 # Q2：身份认证————密钥保护。现在保护的文本实际上是人名，后续用来和人名库进行比对
 # Q3：编码。
-# 拉格朗日插值法拟合多项式
 
 from random import (uniform, shuffle)
 import matplotlib.pyplot as plt
@@ -92,8 +90,6 @@ template=real.people[p]（合法用户对应的指纹模板，就是列表
 
 def lock(secret, template):
     vault = []
-    point_x = []  # 暂时
-    point_y = []  # 暂时
     coeffs = get_coefficients(secret)
 
     # 对于指纹模板中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
