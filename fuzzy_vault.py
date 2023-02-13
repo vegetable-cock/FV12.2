@@ -22,22 +22,9 @@ r = 40  # 杂凑点数量（好像应该是总点数？）
     函数get_coefficients:将要保护的密钥编码为多项式的系数
     输入：密钥字符串
     返回：多项式系数列表，从高阶到低阶
-    
-    函数内部问题：
-    1. python3中的除法是float型，保留小数，这会导致后面的错误
-    解决方法：除号/变成双除号//
-    2. range函数：创建一个整数列表
-    语法：range(start, stop[, step])，不包含stop的值，缺省从0开始、步长为1
-    Python3的range函数返回的是一个对象，所以要用list迭代得到列表
-    3. enumerate函数：将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列
-    语法：enumerate(sequence, [start=0])
-    用例：>>> seasons = ['Spring', 'Summer', 'Fall', 'Winter']
-    >>> list(enumerate(seasons))
-    [(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]
-    4. ord函数：返回一个字符对应的ASCII码
+
     5. 创建多项式的时候用for直接写的，但之后如果不是每阶都有的时候可能要改
     或者在系数列表对应位置0
-    6.这个函数已经过测试，基本好用，之后要对多项式的常数项部分再修改一下，可能有问题
     7.print发现输出了4个列表，正常来讲应该一共3个啊，第4个是把第3个又输出了一遍，排查一下是什么问题
 ****************************************************************************'''
 
@@ -66,11 +53,11 @@ def get_coefficients(word):
 
 def p_x(x, coeffs):
     y = 0
-    degree = len(coeffs) - 1
+    d = len(coeffs) - 1
 
     for coeff in coeffs:
-        y += x ** degree * coeff  # y=cx^4+cx^3+cx^2+cx
-        degree -= 1
+        y += x ** d * coeff  # y=cx^4+cx^3+cx^2+cx
+        d -= 1
 
     return y  # y=f(x),即x代入多项式里对应的纵坐标值
 
