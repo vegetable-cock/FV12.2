@@ -23,9 +23,9 @@ r = 40  # 杂凑点数量（好像应该是总点数？）
     输入：密钥字符串
     返回：多项式系数列表，从高阶到低阶
 
-    5. 创建多项式的时候用for直接写的，但之后如果不是每阶都有的时候可能要改
-    或者在系数列表对应位置0
-    7.print发现输出了4个列表，正常来讲应该一共3个啊，第4个是把第3个又输出了一遍，排查一下是什么问题
+    problem：
+    创建多项式的时候用for直接写的，但之后如果不是每阶都有的时候可能要改，或者在系数列表对应位置0
+     print发现输出了4个列表，正常来讲应该一共3个啊，第4个是把第3个又输出了一遍，排查一下是什么问题
 ****************************************************************************'''
 
 
@@ -46,8 +46,8 @@ def get_coefficients(word):
 
 '''****************************************************************************
 函数p_x：计算x代入多项式后对应的纵坐标
-输入：横坐标x、系数列表coeffs
-返回：x代入多项式后对应的纵坐标
+输入：某个横坐标值x、系数列表coeffs（从高阶到低阶）
+返回：该x代入多项式后对应的纵坐标值
 ****************************************************************************'''
 
 
@@ -98,12 +98,13 @@ def lock(secret, template):
 '''
 画图函数
 输入应该是两个数组
-亟待完善呐
+颜色作参数？
+根据那本书做
 '''
 
 
-def painting(x, y):
-    plt.scatter(x, y)
+def painting(x, y, c):
+    plt.scatter(x, y, color=c)
     plt.show()
 
 
@@ -192,13 +193,26 @@ def main():
             f.write(',')
         f.write(']')
 
+    # 真实点画图
+    real_x = []
+    real_y = []
+    realp = []
+    for pp in real.people:
+        coeffs = get_coefficients(pp)
+    for point in real.people[p]:
+        realp.append([point, p_x(point, coeffs)])
+    for rp in realp:
+        real_x.append(rp[0])
+        real_y.append(rp[1])
+    painting(real_x, real_y, 'blue')
+
     # 画图：最后存的模糊保险箱的图
     tempx = []
     tempy = []
     for a in lock(p, real.people[p]):
         tempx.append(a[0])
         tempy.append(a[1])
-    painting(tempx, tempy)
+    painting(tempx, tempy, 'red')  # 整个vault的图
 
 
 if __name__ == '__main__':
