@@ -78,7 +78,7 @@ template=real.people[p]（合法用户对应的指纹模板，就是列表
 def lock(secret, template):
     vault = []
     coeffs = get_coefficients(secret)
-
+    print('coeffs=',coeffs)
     # 对于指纹模板中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
     # 对于一个用户而言，真实点只有10个
     for point in template:
