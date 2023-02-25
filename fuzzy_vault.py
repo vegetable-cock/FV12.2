@@ -17,6 +17,7 @@ import real
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
 r = 40  # 杂凑点数量（好像应该是总点数？）
+min_dist = 1  # 杂凑点与真实点的最小距离
 
 '''****************************************************************************
     函数get_coefficients:将要保护的密钥编码为多项式的系数
@@ -78,7 +79,7 @@ template=real.people[p]（合法用户对应的指纹模板，就是列表
 def lock(secret, template):
     vault = []
     coeffs = get_coefficients(secret)
-    print('coeffs=',coeffs)
+    print('coeffs=', coeffs)
     # 对于指纹模板中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
     # 对于一个用户而言，真实点只有10个
     for point in template:
@@ -87,6 +88,10 @@ def lock(secret, template):
     # 添加杂凑点
     max_x = max(template)  # 限定在真实点边界范围内添加杂凑点
     max_y = max([y for [x, y] in vault])
+    # 杂凑点距离限制：思路
+    # 随机生成一个点，遍历vault中已有的点，计算其距离
+    # if距离超过最小距离限制，则append进来，否则舍弃，随后计算Vault中总点数
+    # 之后随机生成下一个点，直到Vault中的总点数达到要求
     for i in range(t, r):  # r应该是总点数吧
         x_i = uniform(0, max_x * 1.1)  # uniform(x,y):生成一个在[x,y]内的随机浮点数
         y_i = uniform(0, max_y * 1.1)
