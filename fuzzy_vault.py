@@ -1,7 +1,7 @@
 # Li Shiyang
 # NUDT UniNAV
 # November 1 2022
-
+import math
 # Q1：指纹生成。应当有一个模拟PUF的部分
 # Q2：身份认证————密钥保护。现在保护的文本实际上是人名，后续用来和人名库进行比对
 # Q3：编码。
@@ -17,7 +17,7 @@ import real
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
 r = 40  # 杂凑点数量（好像应该是总点数？）
-min_dist = 1  # 杂凑点与真实点的最小距离
+min_dist = 200000  # 杂凑点与真实点的最小距离
 
 '''****************************************************************************
     函数get_coefficients:将要保护的密钥编码为多项式的系数
@@ -84,7 +84,8 @@ def lock(secret, template):
     # 对于一个用户而言，真实点只有10个
     for point in template:
         vault.append([point, p_x(point, coeffs)])
-
+    print("real point", vault)
+    chaff_point = []  # 额外搞一个列表放杂凑点，后面画图也用得上
     # 添加杂凑点
     max_x = max(template)  # 限定在真实点边界范围内添加杂凑点
     max_y = max([y for [x, y] in vault])
@@ -92,10 +93,22 @@ def lock(secret, template):
     # 随机生成一个点，遍历vault中已有的点，计算其距离
     # if距离超过最小距离限制，则append进来，否则舍弃，随后计算Vault中总点数
     # 之后随机生成下一个点，直到Vault中的总点数达到要求
+
+    '''
+    现在的问题：杂凑点单独存之后，能够满足和真实点的距离限制，但没有考虑杂凑点之间的距离限制'''
     for i in range(t, r):  # r应该是总点数吧
         x_i = uniform(0, max_x * 1.1)  # uniform(x,y):生成一个在[x,y]内的随机浮点数
         y_i = uniform(0, max_y * 1.1)
-        vault.append([x_i, y_i])
+        for v in vault:
+            dist = math.sqrt((x_i - v[0]) ** 2 + (y_i - v[1]) ** 2)
+            if dist < min_dist:
+                break
+                print("over the min distance")
+            else:
+                chaff_point.append([x_i, y_i])  # 问题出在这
+                print("成功加入点")
+
+    vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
     shuffle(vault)  # shuffle()方法：打乱
     return vault
 
