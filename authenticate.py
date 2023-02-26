@@ -1,11 +1,11 @@
-# to use: python authenticate.py fingerprints/jayme
+# to use: python authenticate.py fingerprints/PUF_response
 
 from vaults import vaults
 from fuzzy_vault import (unlock, decode)
 from sys import argv
 import warnings
 
-known = ['Liu Neng', 'liu neng', 'Zhao Si', 'zhao si', 'Xie Guangkun', 'Li Shiyang', 'LI SHIYANG','li shiyang']
+known = ['PUF response','puf response']
 
 warnings.filterwarnings("ignore")
 
@@ -13,8 +13,7 @@ warnings.filterwarnings("ignore")
 
 # 那里的*到底代表引入多个参数还是解压？zip(*zip(a,b))=a,b  有这样一种用法
 def main():
-    #with open("fingerprints\jayme", 'r') as template:  # jayme这个文件应该就是用户用来验证的指纹
-    with open("fingerprints\/norman2", 'r') as template:
+    with open("fingerprints/PUF_response", 'r') as template:
         # 现在只要用其他人的指纹解锁就会报list index out of range 错
 
         # with open(argv[1], 'r') as f:  #with关键字会自动调用f.close()
