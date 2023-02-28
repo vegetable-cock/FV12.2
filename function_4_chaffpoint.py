@@ -41,15 +41,6 @@ for i in range(10, r, 1):
     else:
         continue
 
-print("chaff的长度为", len(chaff))
-
-tempx1 = []
-tempy1 = []
-for ch in chaff:
-    tempx1.append(ch[0])
-    tempy1.append(ch[1])
-painting(tempx1, tempy1, 'blue')  # 整个vault的图
-
 
 reg = []
 j = len(chaff) - 1 # 初始化
@@ -69,13 +60,3 @@ while chaff:
     else:
         pass
 
-
-print("reg里现有", reg)
-print(len(reg))
-
-tempx = []
-tempy = []
-for a in reg:
-    tempx.append(a[0])
-    tempy.append(a[1])
-painting(tempx, tempy, 'red')  # 整个vault的图

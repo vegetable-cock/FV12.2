@@ -2,22 +2,20 @@
 # NUDT UniNAV
 # November 1 2022
 import math
-# Q1：指纹生成。应当有一个模拟PUF的部分
-# Q2：身份认证————密钥保护。现在保护的文本实际上是人名，后续用来和人名库进行比对
-# Q3：编码。
 
-from random import (uniform, shuffle)
+from random import shuffle
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import polyfit
 
 import Lagrange as lg
 import real
+from add_chaff import add_chaff
 
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
-r = 40  # 杂凑点数量（好像应该是总点数？）
-min_dist = 100000  # 杂凑点与真实点的最小距离
+r = 40000  # 杂凑点数量（好像应该是总点数？）
+min_dist = 20000  # 杂凑点与真实点的最小距离
 
 '''****************************************************************************
     函数get_coefficients:将要保护的密钥编码为多项式的系数
@@ -84,28 +82,7 @@ def lock(secret, template):
     for point in template:
         vault.append([point, p_x(point, coeffs)])
 
-
-
-    max_x = max([x for [x, y] in vault])  # 限定在真实点边界范围内添加杂凑点
-    max_y = max([y for [x, y] in vault])
-
-    for i in range(t, r):  # r应 该是总点数吧
-        x_i = uniform(0, max_x * 1.1)  # uniform(x,y):生成一个在[x,y]内的随机浮点数
-        y_i = uniform(0, max_y * 1.1)
-
-        for rp in vault:
-            dist = math.sqrt((x_i - rp[0]) ** 2 + (y_i - rp[1]) ** 2)
-            # print("dist=", dist, rp[0])
-            if dist < min_dist:
-                # print("超过与真实点的最小距离限制")
-                break
-            else:
-                # print("该杂凑点与后面这个真实点距离满足要求", rp[0])
-
-                chaff_point.append([x_i, y_i])  # 缩进有问题，导致存了过多的重复点
-
-
-
+    chaff_point = add_chaff(r, t, vault, 1000)
     vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
     shuffle(vault)  # shuffle()方法：打乱
     return vault
@@ -138,7 +115,7 @@ def approx_equal(a, b, epsilon):
 '''****************************************************************************
 函数unlock：给定一个生物模板和一个模糊保险箱，匹配则返回系数，不匹配则返回none
 输入：参数vault：设备存储的vault
-template:用来验证的生物特征模板（比如fingerprints\jayme2)
+template:用来验证的PUF响应模板（比如fingerprints\PUF_response)
 返回：多项式系数列表
 问题：1.polyfit是numpy中的拟合多项式函数，应被替换为拉格朗日拟合
 2.zip函数：将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的对象
