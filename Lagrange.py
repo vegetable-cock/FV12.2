@@ -31,16 +31,16 @@ def langr(a, b, degree):
                     den[i] = a[i] - a[j]
                 else:
                     if j != i:
-                        l[i] = (l[i]) * (x - a[j])
-                        den[i] = den[i] * (a[i] - a[j])
-            l[i] = l[i] / x
-        l[i] = l[i] / den[i]
+                        l[i] = (l[i])*(x-a[j])
+                        den[i] = den[i]*(a[i]-a[j])
+            l[i] = l[i]/x
+        l[i] = l[i]/den[i]
 
     for i in range(0, degree):
         if i == 0:
-            pl = b[0] * l[0]
+            pl = b[0]*l[0]
         else:
-            pl = pl + (b[i] * l[i])
+            pl = pl+(b[i]*l[i])
     temp = sp.simplify(pl)
     a = sp.poly(temp, x)
 

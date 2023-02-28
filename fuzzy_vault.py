@@ -80,38 +80,33 @@ def lock(secret, template):
     vault = []
     coeffs = get_coefficients(secret)
     # print('coeffs=', coeffs)
-    # 对于指纹模板中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
-    # 对于一个用户而言，真实点只有10个
+    # 对于PUF响应中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
     for point in template:
         vault.append([point, p_x(point, coeffs)])
-    # print("real point", vault)
-    chaff_point = [[0, 0]]  # 额外搞一个列表放杂凑点，后面画图也用得上
-    # 添加杂凑点
 
-    max_x = max([x for [x, y] in vault])#限定在真实点边界范围内添加杂凑点
+
+
+    max_x = max([x for [x, y] in vault])  # 限定在真实点边界范围内添加杂凑点
     max_y = max([y for [x, y] in vault])
 
-    '''
-    现在的问题：杂凑点单独存之后，能够满足和真实点的距离限制，但没有考虑杂凑点之间的距离限制'''
     for i in range(t, r):  # r应 该是总点数吧
         x_i = uniform(0, max_x * 1.1)  # uniform(x,y):生成一个在[x,y]内的随机浮点数
         y_i = uniform(0, max_y * 1.1)
 
         for rp in vault:
             dist = math.sqrt((x_i - rp[0]) ** 2 + (y_i - rp[1]) ** 2)
-            #print("dist=", dist, rp[0])
+            # print("dist=", dist, rp[0])
             if dist < min_dist:
-                #print("超过与真实点的最小距离限制")
+                # print("超过与真实点的最小距离限制")
                 break
             else:
-                #print("该杂凑点与后面这个真实点距离满足要求", rp[0])
+                # print("该杂凑点与后面这个真实点距离满足要求", rp[0])
 
                 chaff_point.append([x_i, y_i])  # 缩进有问题，导致存了过多的重复点
 
-        #print("chaff_point=", chaff_point)
-        print(len(chaff_point))
 
-    #vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
+
+    vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
     shuffle(vault)  # shuffle()方法：打乱
     return vault
 
