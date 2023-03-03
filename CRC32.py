@@ -1,11 +1,13 @@
-# Î»ÖÃĞÅÏ¢´«½øÀ´£¬½øĞĞCRC32±àÂë
-def mycrc32(position):
-    m_pdwCrc32Table = [0 for x in range(0, 256)]
+# ä½ç½®ä¿¡æ¯ä¼ è¿›æ¥ï¼Œè¿›è¡ŒCRC32ç¼–ç 
+# coding=utf-8
+
+def crc32(position):
+    m_pdwCrc32Table = [0 for x in range(0,256)]
     dwPolynomial = 0xEDB88320;
     dwCrc = 0
-    for i in range(0, 255):
+    for i in range(0,255):
         dwCrc = i
-        for j in [8, 7, 6, 5, 4, 3, 2, 1]:
+        for j in [8,7,6,5,4,3,2,1]:
             if dwCrc & 1:
                 dwCrc = (dwCrc >> 1) ^ dwPolynomial
             else:
@@ -16,8 +18,6 @@ def mycrc32(position):
         b = ord(p)
         dwCrc32 = ((dwCrc32) >> 8) ^ m_pdwCrc32Table[(b) ^ ((dwCrc32) & 0x000000FF)]
     dwCrc32 = dwCrc32 ^ 0xFFFFFFFF
-    dwCrc32_bin = bin(dwCrc32)
-    return dwCrc32_bin
+    dwCrc32_bin = bin(dwCrc32)  # binè¿”å›ä¸€ä¸ªäºŒè¿›åˆ¶è¡¨ç¤ºçš„å­—ç¬¦ä¸²
 
-
-print(mycrc32("03016613412000608151858269910"))
+    return dwCrc32_bin[2:]  # å»æ‰å‰ä¸¤ä½â€œ0bâ€
