@@ -11,12 +11,13 @@ from numpy import polyfit
 import Lagrange as lg
 import real
 import vaults
-from add_chaff import add_chaff
+import add_chaff
+from finite_field import x_2_xgf
 
-degree = 6  # 多项式阶数
+degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
-r = 400  # 杂凑点数量（好像应该是总点数？）
-min_dist = 20000  # 杂凑点与真实点的最小距离
+r = 4000  # 杂凑点数量（好像应该是总点数？）
+min_dist = 10  # 杂凑点与真实点的最小距离
 
 '''****************************************************************************
     函数get_coefficients:将要保护的密钥编码为多项式的系数
@@ -43,6 +44,18 @@ def get_coefficients(word):
         coeffs.append(num ** (1 / 3.0))
     return coeffs
 
+'''****************************************************************************
+函数：cal_coeffs:计算整数的系数
+将秘密信息转化为ASCII码，再转为二进制
+****************************************************************************'''
+def cal_coeffs(secret):
+    coeff = []
+    for i in range(0,len(secret)):
+        c = ord(secret[i])
+        coeff.append(c)
+    print(coeff)
+    return coeff
+
 
 '''****************************************************************************
 函数p_x：计算x代入多项式后对应的纵坐标
@@ -55,8 +68,10 @@ def p_x(x, coeffs):
     y = 0
     d = len(coeffs) - 1
     for coeff in coeffs:
-        y += x ** d * coeff  # y=cx^4+cx^3+cx^2+cx
+        y += x ** d * coeff  # y=cx^4+cx^3+cx^2+cx+C
         d -= 1
+    y = x_2_xgf(y)
+    print("y=",y)
     return y  # y=f(x),即x代入多项式里对应的纵坐标值
 
 
@@ -74,8 +89,9 @@ template=real.people[p]（合法用户对应的指纹模板，就是列表
 
 def lock(secret, template):
     vault = []
-    coeffs = get_coefficients(secret)
-    # print('coeffs=', coeffs)
+    #coeffs = get_coefficients(secret)
+    coeffs = cal_coeffs(secret)
+    print('coeffs=', coeffs)
     # 对于PUF响应中的每个点（横坐标），在vault里添加(x,f(x))，即真实点
     for point in template:
         vault.append([point, p_x(point, coeffs)])
@@ -83,7 +99,7 @@ def lock(secret, template):
     print("真实点",vault)  # 这里的真实点是没问题的
     painting2(vault,'blue')
 
-    chaff_point = add_chaff(r, t, vault, 1000)
+    chaff_point = add_chaff.add_chaff(r, t, vault, min_dist)
     vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
     shuffle(vault)  # shuffle()方法：打乱
     return vault

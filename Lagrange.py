@@ -44,4 +44,10 @@ def langr(a, b, degree):
     temp = sp.simplify(pl)
     a = sp.poly(temp, x)
 
-    return a.coeffs()
+# 将拉格朗日重建出的系数矩阵四舍五入到整数位
+    coeffs_int =[]
+    for c in a.coeffs():
+        t =round(c)
+        coeffs_int.append(t)
+
+    return coeffs_int

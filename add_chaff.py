@@ -33,8 +33,8 @@ def add_chaff(p_num, t, real_point, min_dist):
     max_y = max([y for [x, y] in real_point])
 
     for i in range(t, p_num, 1):
-        x_i = uniform(0, max_x * 1.1)
-        y_i = uniform(0, max_y * 1.1)
+        x_i = round(uniform(0, max_x * 1.1))
+        y_i = round(uniform(0, max_y * 1.1))
         for rp in real_point:
             f1 = False
             if not dist(x_i, y_i, rp[0], rp[1], min_dist):  # 如果不小于最小限制
