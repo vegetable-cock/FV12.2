@@ -1,13 +1,12 @@
 # Li Shiyang
 # NUDT UniNAV
 # Start time: November 1, 2022
-import math
 
+import math
 from random import shuffle
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import polyfit
-
 import Lagrange as lg
 import real
 import vaults
@@ -16,8 +15,8 @@ from add_chaff import add_chaff
 degree = 4  # 多项式阶数
 t = 10  # 每个生物模板中特征点的数量
 r = 400  # 杂凑点数量（好像应该是总点数？）
-min_dist = 20000  # 杂凑点与真实点的最小距离
-
+min_dist = 0.1  # 杂凑点与真实点的最小距离
+real_point=[]
 '''****************************************************************************
     函数get_coefficients:将要保护的密钥编码为多项式的系数
     输入：密钥字符串
@@ -69,6 +68,7 @@ lock在main函数里被调用，访问的是real中的传统密钥和PUF响应(C
 
 
 def lock(secret, template):
+    global real_point
     vault = []
     coeffs = get_coefficients(secret)
     # print('coeffs=', coeffs)
@@ -76,8 +76,16 @@ def lock(secret, template):
     for point in template:
         vault.append([point, p_x(point, coeffs)])
 
-    print("真实点",vault)  # 这里的真实点是没问题的
-    painting2(vault,'blue')
+    print("真实点", vault)  # 这里的真实点是没问题的
+    tempx = []
+    tempy = []
+    for v in vault:
+        tempx.append(v[0])
+        tempy.append(v[1])
+    plt.scatter(tempx, tempy, color='blue')
+    plt.show()
+
+    real_point=vault    #生成一个真实点列表用来画图
 
     chaff_point = add_chaff(r, t, vault, 1000)
     vault = vault + chaff_point  # 这样直接加会不会比较慢？查一下
@@ -85,31 +93,8 @@ def lock(secret, template):
     return vault
 
 
-'''****************************************************************************
-画图函数
-输入:x坐标列表，y坐标列表，颜色
-根据那本书做
-****************************************************************************'''
 
 
-def painting(x, y, c):
-    plt.scatter(x, y, color=c)
-    plt.show()
-
-
-'''
-对于那些[[x1,y1],[x2,y2]...]形式的点画图
-输入：p：一个列表
-'''
-
-
-def painting2(p, c):
-    tempx = []
-    tempy = []
-    for pp in p:
-        tempx.append(pp[0])
-        tempy.append(pp[1])
-    painting(tempx, tempy, c)
 
 
 '''****************************************************************************
@@ -186,15 +171,22 @@ def main():
         f.close()
 
         for ap in vaults.vaults:
-            painting2(ap, 'red')  # vault中所有点画图
+            tempx = []
+            tempy = []
+            for pp in ap:
+                tempx.append(pp[0])
+                tempy.append(pp[1])
+            plt.scatter(tempx, tempy, color='red')
+        tempx = []
+        tempy = []
+        for v in real_point:
+            tempx.append(v[0])
+            tempy.append(v[1])
+        plt.scatter(tempx, tempy, color='blue')
+        plt.show()
     # 真实点画图
-'''
-    realp = []
-    for pp in real.people:
-        coeffs = get_coefficients(pp)
-    for point in real.people[p]:
-        realp.append([point, p_x(point, coeffs)])
-    painting2(realp, 'blue')
-'''
+
+
+
 if __name__ == '__main__':
     main()

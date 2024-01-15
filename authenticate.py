@@ -26,7 +26,7 @@ def main():
         try:
             trad_password = decode(coeffs)
             if trad_password in known:  # 解锁出密钥来的验证环节
-                print("成功解锁，恢复出的传统密钥为",trad_password)
+                print("成功解锁，恢复出的密钥为",trad_password)
                 return
         except TypeError:
             pass
